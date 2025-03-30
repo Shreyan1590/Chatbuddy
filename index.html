@@ -98,7 +98,7 @@
     <script>
                 let userName = "";
 
-async function sendMessage() {
+                async function sendMessage() {
     let inputField = document.getElementById("userInput");
     let userMessage = inputField.value.trim();
     if (!userMessage) return;
@@ -106,15 +106,24 @@ async function sendMessage() {
     displayMessage("You: " + userMessage, "user");
 
     try {
-        let response = await fetch("https://chatnex.vercel.app/", {
+        let response = await fetch("https://chatnex.vercel.app/api", {  // Correct API endpoint
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage })
         });
 
+        if (!response.ok) {
+            throw new Error("Server Error: " + response.status);
+        }
+
         let data = await response.json();
+        if (!data.response) {
+            throw new Error("Invalid response from server");
+        }
+
         displayMessage("ChatNex: " + data.response, "bot");
     } catch (error) {
+        console.error("Error:", error);
         displayMessage("ChatNex: Oops! Something went wrong.", "bot");
     }
 
