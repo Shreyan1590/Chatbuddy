@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBuddy</title>
+    <title>ChatNex</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,24 +106,15 @@
     displayMessage("You: " + userMessage, "user");
 
     try {
-        let response = await fetch("https://chatnex.vercel.app/api", {  // Correct API endpoint
+        let response = await fetch("https://chatnex.vercel.app/chat", {  // Correct API URL
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage })
         });
 
-        if (!response.ok) {
-            throw new Error("Server Error: " + response.status);
-        }
-
         let data = await response.json();
-        if (!data.response) {
-            throw new Error("Invalid response from server");
-        }
-
         displayMessage("ChatNex: " + data.response, "bot");
     } catch (error) {
-        console.error("Error:", error);
         displayMessage("ChatNex: Oops! Something went wrong.", "bot");
     }
 
