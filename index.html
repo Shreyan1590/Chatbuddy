@@ -106,7 +106,7 @@ async function sendMessage() {
     displayMessage("You: " + userMessage, "user");
 
     try {
-        let response = await fetch("https:chatnex.vercel.app/chat", {
+        let response = await fetch("https://chatnex.vercel.app/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage })
