@@ -32,6 +32,8 @@
             overflow-y: auto;
             padding: 15px;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
         }
         .input-container {
             display: flex;
@@ -96,95 +98,62 @@
     </div>
 
     <script>
-                let userName = "";
+        let userName = "";
 
-                async function sendMessage() {
-    let inputField = document.getElementById("userInput");
-    let userMessage = inputField.value.trim();
-    if (!userMessage) return;
+        const chatbotResponses = {
+            "hello": "Hi there! How can I assist you?",
+            "how are you": "I'm just a bot, but I'm doing great! How about you?",
+            "what's your name": "I'm ChatNex, your friendly AI assistant!",
+            "bye": "Goodbye! Have a wonderful day!",
+            "tell me a joke": "Why don’t skeletons fight each other? Because they don’t have the guts! Haha!"
+        };
 
-    displayMessage("You: " + userMessage, "user");
+        function correctSpelling(input) {
+            const corrections = {
+                "helllo": "hello",
+                "hwo": "how",
+                "whta": "what",
+                "naem": "name",
+                "godo": "good",
+                "byee": "bye"
+            };
+            return corrections[input] || input;
+        }
 
-    try {
-        let response = await fetch("https://chatnex.vercel.app/chat", {  // Correct API URL
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userMessage })
-        });
+        function sendMessage() {
+            let inputField = document.getElementById("userInput");
+            let userMessage = inputField.value.trim();
+            if (!userMessage) return;
 
-        let data = await response.json();
-        displayMessage("ChatNex: " + data.response, "bot");
-    } catch (error) {
-        displayMessage("ChatNex: Oops! Something went wrong.", "bot");
-    }
+            displayMessage("You: " + userMessage, "user");
 
-    inputField.value = "";
-}
+            let lowerMessage = userMessage.toLowerCase();
+            lowerMessage = correctSpelling(lowerMessage);
+            let botReply;
 
-function displayMessage(message, sender) {
-    let chatBox = document.getElementById("chatBox");
-    let messageElement = document.createElement("div");
-    messageElement.classList.add("message", sender);
-    messageElement.textContent = message;
-    chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+            if (lowerMessage.startsWith("my name is")) {
+                userName = userMessage.split(" ").slice(3).join(" ");
+                botReply = `Nice to meet you, ${userName}! How can I assist you today?`;
+            } else if (lowerMessage.includes("my name")) {
+                botReply = "Could you please tell me your name in the format 'My name is [Your Name]'?";
+            } else if (userName && chatbotResponses[lowerMessage]) {
+                botReply = chatbotResponses[lowerMessage].replace("Hi there!", `Hi ${userName}!`);
+            } else {
+                botReply = chatbotResponses[lowerMessage] || "I'm not sure how to respond to that.";
+            }
 
-const express = require("express");
-const cors = require("cors");
+            displayMessage("ChatNex: " + botReply, "bot");
+            inputField.value = "";
+        }
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-let userName = "";
-
-const chatbotResponses = {
-    "hello": "Hi there! How can I assist you?",
-    "how are you": "I'm just a bot, but I'm doing great! How about you?",
-    "what's your name": "I'm ChatBuddy, your friendly AI assistant!",
-    "bye": "Goodbye! Have a wonderful day!",
-    "tell me a joke": "Why don’t skeletons fight each other? Because they don’t have the guts! Haha!"
-};
-
-function correctSpelling(input) {
-    const corrections = {
-        "helllo": "hello",
-        "hwo": "how",
-        "whta": "what",
-        "naem": "name",
-        "godo": "good",
-        "byee": "bye"
-    };
-    return corrections[input] || input;
-}
-
-app.post("/chat", (req, res) => {
-    let userMessage = req.body.message.trim();
-    if (!userMessage) return res.json({ response: "Please enter a message." });
-
-    let lowerMessage = userMessage.toLowerCase();
-    lowerMessage = correctSpelling(lowerMessage);
-    let botReply;
-
-    if (lowerMessage.startsWith("my name is")) {
-        userName = userMessage.split(" ").slice(3).join(" ");
-        botReply = `Nice to meet you, ${userName}! How can I assist you today?`;
-    } else if (lowerMessage.includes("my name")) {
-        botReply = "Could you please tell me your name in the format 'My name is [Your Name]'?";
-    } else if (userName && chatbotResponses[lowerMessage]) {
-        botReply = chatbotResponses[lowerMessage].replace("Hi there!", `Hi ${userName}!`);
-    } else {
-        botReply = chatbotResponses[lowerMessage] || "I'm not sure how to respond to that.";
-    }
-
-    res.json({ response: botReply });
-});
-
-// Set Vercel Port
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-    </script>    
+        function displayMessage(message, sender) {
+            let chatBox = document.getElementById("chatBox");
+            let messageElement = document.createElement("div");
+            messageElement.classList.add("message", sender);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
 </body>
 </html>
