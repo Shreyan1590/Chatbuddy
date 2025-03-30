@@ -106,16 +106,16 @@ async function sendMessage() {
     displayMessage("You: " + userMessage, "user");
 
     try {
-        let response = await fetch("https://your-vercel-backend.vercel.app/chat", {
+        let response = await fetch("https:chatnex.vercel.app/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMessage })
         });
 
         let data = await response.json();
-        displayMessage("Bot: " + data.response, "bot");
+        displayMessage("ChatNex: " + data.response, "bot");
     } catch (error) {
-        displayMessage("Bot: Oops! Something went wrong.", "bot");
+        displayMessage("ChatNex: Oops! Something went wrong.", "bot");
     }
 
     inputField.value = "";
