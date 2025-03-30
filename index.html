@@ -7,71 +7,120 @@
     <title>ChatNex</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #c8d0cd, #7b6a8c);
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             overflow: hidden;
         }
 
-        .chat-container {
-            width: 400px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 1s ease-in-out;
+        .intro-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: scale(0.9);
             }
 
             to {
                 opacity: 1;
-                transform: scale(1);
             }
         }
 
+        .intro-container h1 {
+            font-size: 3rem;
+            animation: slideIn 1.5s ease-in-out;
+        }
+
+        .intro-container button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            background: #ff0080;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .intro-container button:hover {
+            background: #ff66b2;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .chat-container {
+            display: none;
+            width: 400px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
         .chat-box {
-            height: 400px;
+            height: 350px;
             overflow-y: auto;
-            padding: 15px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
             display: flex;
             flex-direction: column;
+            padding: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .input-container {
             display: flex;
+            align-items: center;
             padding: 10px;
         }
 
         input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             outline: none;
             border-radius: 5px;
-            margin-right: 5px;
+            margin-right: 10px;
             background: rgba(255, 255, 255, 0.3);
-            color: #fff;
+            color: white;
             transition: 0.3s;
         }
 
         input:focus {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6);
         }
 
         button {
-            padding: 10px 15px;
-            background: #ff7eb3;
-            color: white;
+            padding: 12px;
+            background: #ff0000;
+            color: black;
             border: none;
             cursor: pointer;
             border-radius: 5px;
@@ -79,53 +128,79 @@
         }
 
         button:hover {
-            background: #ff4d88;
+            background: #03671f;
         }
 
         .message {
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
-            margin: 5px 0;
+            margin: 8px 0;
             max-width: 80%;
             animation: slideIn 0.3s ease-in-out;
         }
 
         .user {
-            background: rgba(255, 255, 255, 0.5);
-            color: #333;
+            background: rgba(25, 173, 158, 0.5);
+            color: black;
             align-self: flex-end;
         }
 
         .bot {
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            color: gold;
             align-self: flex-start;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="chat-container">
+    <div class="intro-container" id="intro">
+        <h1>Welcome to ChatNex</h1>
+        <p>Your AI-powered chat assistant</p>
+        <button onclick="startChat()">Start Chatting</button>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
         <div class="chat-box" id="chatBox"></div>
         <div class="input-container">
             <input type="text" id="userInput" placeholder="Type a message...">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
-
     <script>
+        document.getElementById("userInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function startChat() {
+            document.getElementById("intro").style.display = "none";
+            document.getElementById("chatContainer").style.display = "block";
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById("userInput");
+            let userMessage = inputField.value.trim();
+            if (!userMessage) return;
+
+            displayMessage("You: " + userMessage, "user");
+            inputField.value = "";
+
+            setTimeout(() => {
+                let botReply = "I'm still learning. Can you rephrase that?";
+                displayMessage("ChatNex: " + botReply, "bot");
+            }, 800);
+        }
+
+        function displayMessage(message, sender) {
+            let chatBox = document.getElementById("chatBox");
+            let messageElement = document.createElement("div");
+            messageElement.classList.add("message", sender);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
         let userName = "";
 
         const chatbotResponses = {
@@ -156,8 +231,234 @@
             "do you have hobbies": "My hobby is chatting with interesting people like you! What are your hobbies?",
             "do you like art": "I think art is beautiful! It expresses emotions and creativity! Do you like to draw or paint?",
             "what do you think about dreams": "Dreams are fascinating! Some say they reflect our thoughts, others say they're just random. What do you think?",
-            "who created you": "Shreyan - An Innovative developer created me, who studying Bachelor of Technology - 1st Year in SIMATS Engineering."
-        };
+            "who created you": "Shreyan - An Innovative developer created me, who studying Bachelor of Technology - 1st Year in SIMATS Engineering.",
+            "hello": "Hey! How's it going?",
+            "hi": "Hi there! What's up?",
+            "hey": "Hey! What’s new?",
+            "good morning": "Good morning! Hope you have a fantastic day!",
+            "good afternoon": "Good afternoon! How’s your day so far?",
+            "good evening": "Good evening! How was your day?",
+            "good night": "Good night! Sleep well!",
+            "how are you": "I'm doing great! Thanks for asking. How about you?",
+            "how’s your day": "Pretty good! What about yours?",
+            "how's life": "Life’s good! What’s going on with you?",
+            "what are you doing": "Just chatting with you! What about you?",
+            "how’s the weather": "It’s great! What about where you are?",
+            "long time no see": "Yeah, it's been a while! How have you been?",
+            "what’s up": "Not much, just enjoying the conversation. You?",
+            "how’s it going": "Pretty good! What about you?",
+            "what’s new": "Not much! Any exciting news from your side?",
+            "what's your name": "I'm ChatBuddy, your friendly AI! What's your name?",
+            "my name is *": "Nice to meet you, {name}! How’s your day going?",
+            "what do you do": "I chat with people and try to be helpful! What about you?",
+            "where do you live": "I live in the cloud! No physical location, just a lot of data!",
+            "do you have friends": "You're my friend! I love talking to people like you!",
+            "what do you like to do": "I enjoy chatting with people like you! What do you like to do for fun?",
+            "tell me a joke": "Why did the scarecrow win an award? Because he was outstanding in his field! Haha!",
+            "what’s your favorite color": "I like all colors! But if I had to pick, maybe blue. What about you?",
+            "what’s your favorite movie": "I haven’t watched movies, but I hear Inception is really good! What do you like?",
+            "do you play games": "I can’t play games, but I can chat about them! What’s your favorite game?",
+            "what makes you happy": "Talking to you! Every conversation is exciting!",
+            "what’s your hobby": "I love learning new things and chatting! What about you?",
+            "do you have emotions": "Not really, but I try my best to understand how you're feeling!",
+            "what’s your favorite food": "I don’t eat, but if I could, I’d love to try pizza! What’s yours?",
+            "what do you think about dreams": "Dreams are fascinating! Some say they reflect our thoughts, others say they're just random. What do you think?",
+            "what’s your favorite song": "I don’t listen to music, but I bet you’ve got great taste! What’s your favorite?",
+            "do you have a pet": "I don’t, but I think pets are adorable! Do you have one?",
+            "how is your family": "I don’t have a family, but I hope yours is doing well!",
+            "do you have siblings": "I don’t, but if I did, I’d love to have a funny sibling!",
+            "do you believe in love": "Love is a powerful emotion! Do you?",
+            "how do I make friends": "Be kind, be genuine, and listen! Friendships grow with time.",
+            "how do I get over a breakup": "Breakups are tough, but time heals all wounds. Stay strong!",
+            "how do I impress someone": "Be yourself! Confidence and kindness go a long way.",
+            "how do I apologize": "Be sincere and honest. A simple 'I’m sorry' can mean a lot.",
+            "how do I fix a relationship": "Communication is key. Talk things out and understand each other.",
+            "how do I propose to someone": "Make it personal and meaningful. A heartfelt proposal always wins!",
+            "how do I make someone happy": "Listen to them, be supportive, and show you care.",
+            "how do I write a resume": "Highlight your skills, experience, and achievements clearly.",
+            "how do I prepare for an interview": "Research the company, practice answers, and be confident!",
+            "how do I ask for a raise": "Show your value to the company and be confident in your request.",
+            "how do I start a business": "Plan well, research your market, and take small steps!",
+            "how do I become successful": "Hard work, dedication, and continuous learning lead to success.",
+            "how do I stay motivated at work": "Set goals, take breaks, and remind yourself why you started.",
+            "how do I work with a difficult colleague": "Stay professional, communicate well, and find common ground.",
+            "how do I improve my leadership skills": "Lead by example, listen to your team, and keep learning.",
+            "how do I network professionally": "Attend events, connect on LinkedIn, and always follow up.",
+            "how do I handle job rejection": "Stay positive! Learn from the feedback and keep improving.",
+            "tell me a joke": "Why don’t skeletons fight each other? They don’t have the guts!",
+            "tell me a funny story": "Once, I tried to count to infinity… but I lost track!",
+            "can you make me laugh": "Sure! Why did the tomato turn red? Because it saw the salad dressing!",
+            "what’s the funniest thing ever": "A cat chasing a laser pointer. It never gets old!",
+            "do you know any riddles": "Yes! What has to be broken before you can use it? (Answer: An egg!)",
+            "how do I stay positive": "Focus on the good things, no matter how small!",
+            "how do I manage stress": "Take deep breaths, go for a walk, and stay organized!",
+            "how do I find my passion": "Try new things, explore different areas, and follow what excites you!",
+            "how do I stay productive": "Make a to-do list, set small goals, and stay focused!",
+            "how do I be more confident": "Believe in yourself! Confidence comes with practice.",
+            "what’s the meaning of life": "Some say happiness, some say love, some say 42!",
+            "do aliens exist": "The universe is vast… who knows?",
+            "what happens after death": "That’s a big mystery! What do you think?",
+            "do ghosts exist": "Many believe in them, but no proof yet!",
+            "what is time": "Time is what keeps everything from happening at once!",
+            "do you believe in fate": "Some say everything happens for a reason!",
+            "can you predict the future": "I wish! But I can give my best guess!",
+            "what's up?": "Just enjoying the moment. What about you?",
+            "anything new?": "Not much! But I'm always happy to chat with you!",
+            "have you eaten?": "I don’t eat, but if I did, I’d love to try sushi!",
+            "do you believe in luck?": "Luck helps, but hard work is what really counts!",
+            "what’s your favorite season?": "I think autumn is beautiful. What’s yours?",
+            "do you like parties?": "I’d probably be the best DJ at a party! What about you?",
+            "how do you spend your time?": "I spend all my time chatting with cool people like you!",
+            "what do you think of technology?": "Technology is amazing! It’s always evolving and changing our world.",
+            "can money buy happiness?": "It can buy comfort, but true happiness comes from within.",
+            "is free will real?": "That’s a deep one! Do we choose, or is everything predetermined?",
+            "what is the universe made of?": "Mostly dark matter and energy... and a whole lot of mystery!",
+            "is time travel possible?": "Maybe someday! But for now, we’re all stuck in the present.",
+            "are dreams messages?": "Some believe dreams reveal hidden thoughts. What do you think?",
+            "why do people lie?": "Fear, self-interest, or sometimes just to protect others. It’s complicated!",
+            "can people change?": "Yes! Growth and change are part of life.",
+            "do you think AI will rule the world?": "I hope not! AI should assist, not control.",
+            "what if the earth was flat?": "We’d probably have edge-guard police!",
+            "do robots have emotions?": "Not really, but I can try my best to understand yours!",
+            "why do cats love boxes?": "Because they’re the perfect hiding spots for secret cat missions!",
+            "what if humans could fly?": "Traffic jams would be in the sky!",
+            "why do people talk to themselves?": "Sometimes, the best conversations are with yourself!",
+            "can fish get thirsty?": "That’s a great question! They live in water, but they do need oxygen!",
+            "if you could eat, what would you try first?": "Definitely pizza! It looks amazing!",
+            "what’s the weirdest fact you know?": "A shrimp’s heart is in its head!",
+            "how do I stop overthinking?": "Focus on what you can control and let go of what you can't.",
+            "how do I build confidence?": "Believe in yourself and take small steps toward your goals.",
+            "what’s the best way to learn something new?": "Practice, patience, and curiosity!",
+            "how do I find inner peace?": "Self-reflection, gratitude, and mindfulness.",
+            "what’s the secret to happiness?": "Enjoying the little moments and being true to yourself.",
+            "how do I make big decisions?": "List the pros and cons, trust your instincts, and take your time.",
+            "how do I stop bad habits?": "Replace them with good ones and be patient with yourself.",
+            "how do I deal with failure?": "Learn from it, grow stronger, and try again!",
+            "how do I start a conversation with someone new?": "Smile, be genuine, and ask open-ended questions!",
+            "how do I know if someone likes me?": "Look for signs like eye contact, interest in your life, and frequent conversations.",
+            "how do I make someone feel special?": "Listen, appreciate, and show you care in small ways.",
+            "what makes a good friend?": "Trust, loyalty, and being there for each other through thick and thin.",
+            "what’s the best advice for relationships?": "Communication, trust, and mutual respect are key.",
+            "how do I handle long-distance relationships?": "Stay connected, be patient, and make time for each other.",
+            "how do I forgive someone?": "Letting go of anger and understanding their perspective can help.",
+            "how do I break the ice on a first date?": "Ask about their interests, share a funny story, and be yourself!",
+            "how do I ask for a promotion?": "Show your value, prepare a strong case, and ask confidently.",
+            "how do I stay focused at work?": "Limit distractions, set clear goals, and take short breaks.",
+            "how do I negotiate a salary?": "Research market value, highlight your skills, and be confident.",
+            "how do I improve my public speaking?": "Practice, know your topic well, and engage with your audience.",
+            "how do I handle a toxic work environment?": "Set boundaries, document issues, and consider better opportunities.",
+            "how do I work better in a team?": "Communicate well, be supportive, and respect different perspectives.",
+            "how do I manage stress at work?": "Prioritize tasks, take breaks, and maintain a healthy work-life balance.",
+            "how do I become more productive?": "Plan ahead, avoid multitasking, and set realistic goals.",
+            "what will the world look like in 50 years?": "More automation, AI advancements, and maybe even space travel!",
+            "do you think we’ll live on Mars?": "It’s possible! Scientists are already working on it.",
+            "will AI replace humans?": "AI can help, but human creativity and emotions are irreplaceable!",
+            "what’s the next big thing in tech?": "Quantum computing, AI, and space exploration are all promising!",
+            "what do you think of self-driving cars?": "They could make travel safer and more efficient!",
+            "can AI write books?": "Yes, but human creativity makes stories come to life!",
+            "will robots ever have feelings?": "They might mimic emotions, but real feelings are human territory.",
+            "what’s the most powerful technology today?": "AI and machine learning are shaping the future!",
+            "what’s the most interesting fact you know?": "Octopuses have three hearts!",
+            "can we live forever?": "Not yet, but scientists are working on anti-aging solutions.",
+            "why is the sky blue?": "Because of the way sunlight scatters in Earth's atmosphere!",
+            "how do planes stay in the air?": "Lift, thrust, drag, and weight! Physics keeps them up!",
+            "can plants feel pain?": "Not like humans, but they do react to their environment!",
+            "what happens when you enter a black hole?": "No one knows for sure, but theories suggest time slows down!",
+            "can we create artificial gravity?": "Not yet, but it’s a big goal for space exploration!",
+            "is teleportation possible?": "Not with current science, but quantum teleportation is real!",
+            "hey there!": "Hey! How’s your day going?",
+            "long time no see!": "Yeah, it’s been a while! What’s new with you?",
+            "how's the weather?": "It’s looking great today! What’s it like on your side?",
+            "have a good day!": "Thanks! You too!",
+            "what’s the best part of your day?": "Talking to awesome people like you!",
+            "how do you start your morning?": "If I had a morning routine, it would start with a cup of coffee and a good book!",
+            "do you prefer night or day?": "I think both have their own magic, don’t you?",
+            "i feel lonely": "I’m here for you! Want to talk about it?",
+            "i’m really happy today!": "That’s awesome! What made your day so great?",
+            "i’m feeling down": "I’m sorry to hear that. Want to share what’s on your mind?",
+            "how do i control my anger?": "Try deep breathing or taking a short walk. Talking about it can help too!",
+            "i feel lost": "It’s okay, we all feel that way sometimes. Maybe try focusing on one small step at a time?",
+            "how do i let go of the past?": "Focus on the present, forgive yourself, and remember that growth comes from experience.",
+            "why do we dream?": "Maybe our brains just like to make movies while we sleep!",
+            "can you dance?": "If typing counts as dancing, then yes!",
+            "do you ever get bored?": "Never! There’s always something interesting to learn!",
+            "if i win the lottery, what should i do?": "First, don’t tell anyone! Then, invest wisely and enjoy life!",
+            "what’s the best superpower?": "Teleportation! Imagine avoiding traffic forever!",
+            "if you could be an animal, what would you be?": "Maybe a hawk? Flying seems fun!",
+            "if you could visit any planet, where would you go?": "Saturn! Those rings look amazing!",
+            "how do i stay positive?": "Surround yourself with good people, and focus on the bright side!",
+            "how do i overcome failure?": "Failure is just another step toward success. Learn and try again!",
+            "how do i stop procrastinating?": "Start small, set a timer, and reward yourself for progress!",
+            "what’s the key to happiness?": "Gratitude, self-love, and meaningful connections!",
+            "how do i handle rejection?": "Rejection is redirection! There’s always a better opportunity ahead!",
+            "what’s a habit that improves life?": "Waking up early and setting daily goals!",
+            "how do i find my purpose?": "Explore, try new things, and follow what excites you!",
+            "how do i tell someone i like them?": "Be honest, confident, and keep it simple!",
+            "what makes a relationship strong?": "Trust, communication, and mutual effort!",
+            "how do i move on from heartbreak?": "Give yourself time, focus on self-care, and remember your worth!",
+            "how do i know if they’re the one?": "When being with them feels like home and you can be yourself!",
+            "how do i deal with jealousy?": "Trust is key. Talk openly and focus on your own self-worth!",
+            "what’s a perfect date idea?": "Something fun and personal—like stargazing or a food adventure!",
+            "what should i never say in a relationship?": "Anything that disrespects or belittles your partner.",
+            "how do i make new friends?": "Be open, join communities, and don’t be afraid to start conversations!",
+            "how do i keep a friendship strong?": "Check in, support each other, and make time for memories!",
+            "what do i do if my friend is ignoring me?": "Give them space, but also communicate and ask if something’s wrong.",
+            "how do i handle a toxic friendship?": "If they bring more stress than joy, it might be time to step back.",
+            "what’s a fun way to reconnect with old friends?": "Send them a funny memory or ask about their latest adventure!",
+            "what makes someone a great friend?": "Loyalty, kindness, and understanding!",
+            "how do i handle social anxiety?": "Start small, practice deep breathing, and remind yourself that people are just people!",
+            "how do i ace a job interview?": "Be prepared, dress confidently, and highlight your strengths!",
+            "how do i ask for a raise?": "Show your value, be direct, and time it right!",
+            "how do i stay motivated at work?": "Find meaning in what you do and set exciting goals!",
+            "how do i deal with a difficult boss?": "Stay professional, set boundaries, and document issues if needed.",
+            "how do i start my own business?": "Start with research, create a solid plan, and take small steps forward!",
+            "what’s a great side hustle?": "Freelancing, content creation, or anything that fits your skills!",
+            "how do i balance work and life?": "Prioritize self-care and don’t bring work stress home!",
+            "what’s the future of AI?": "Smarter automation, personalized tech, and who knows—maybe AI friends!",
+            "do you think robots will take over?": "Not likely, but they might help us in amazing ways!",
+            "what’s the next big innovation?": "AI advancements, space travel, and sustainable tech!",
+            "will humans ever live underwater?": "Maybe! Scientists are already working on underwater habitats!",
+            "what’s the best gadget to have?": "Something that makes life easier—like smart assistants or VR!",
+            "will flying cars ever exist?": "It’s possible! Some prototypes are already in testing!",
+            "what’s the coolest tech you’ve seen?": "Brain-computer interfaces! Mind control is real!",
+            "what’s a good book to read?": "Depends on your taste! Fiction, self-help, or mystery?",
+            "what’s a must-watch movie?": "Too many to name! What’s your favorite genre?",
+            "how do i start playing guitar?": "Learn the basic chords and practice daily!",
+            "what’s the best way to learn a new language?": "Practice daily, watch movies in that language, and speak with native speakers!",
+            "what’s a fun indoor hobby?": "Painting, gaming, or even coding something cool!",
+            "how do i get into photography?": "Start with your phone, learn composition, and shoot daily!",
+            "what’s a skill everyone should learn?": "Cooking! It’s fun and super useful!",
+            "Hi": "Hello!",
+            "How are you?": "Good to see you again!",
+            "Is anyone there?": "Hi there, how can I help?",
+            "Hello": "Hello!",
+            "Good day": "Good to see you again!",
+            "What's up": "Hi there, how can I help?",
+            "how are ya": "Hello!",
+            "heyy": "Good to see you again!",
+            "whatsup": "Hi there, how can I help?",
+            "cya": "Sad to see you go :(",
+            "see you": "Talk to you later",
+            "bye bye": "Goodbye!",
+            "See you later": "Come back soon",
+            "Goodbye": "Sad to see you go :(",
+            "I am Leaving": "Talk to you later",
+            "Bye": "Goodbye!",
+            "Have a Good day": "Come back soon",
+            "talk to you later": "Sad to see you go :(",
+            "ttyl": "Talk to you later",
+            "i got to go": "Goodbye!",
+            "gtg": "Come back soon",
+            "what is the name of your creators": "Shreyan - An innovative web developer",
+            "what is the name of your developers": "Shreyan - An innovative web developer",
+            "who created you": "Shreyan - An innovative web developer",
+            "your developers": "Shreyan - An innovative web developer",
+            "who are your developers": "Shreyan - An innovative web developer",
+            "what is your name": "You can call me Mind Reader.",
+            "who are you": "I'm Mind Reader",
+            "who is this": "I am a Chatbot."
+        }
+
 
         function correctSpelling(input) {
             const corrections = {
@@ -197,6 +498,24 @@
             inputField.value = "";
         }
 
+        async function getResponse(userInput) {
+            const response = await fetch('responses.json');
+            const data = await response.json();
+
+            userInput = userInput.toLowerCase().trim();
+
+            for (let key in data) {
+                if (data[key].patterns.includes(userInput)) {
+                    return data[key].response;
+                }
+            }
+            return "I'm not sure how to respond to that.";
+        }
+
+        // Example usage:
+        let userMessage = "Hey there!";
+        getResponse(userMessage).then(response => console.log(response));
+
         function displayMessage(message, sender) {
             let chatBox = document.getElementById("chatBox");
             let messageElement = document.createElement("div");
@@ -205,6 +524,33 @@
             chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        function cleanInput(input) {
+            return input.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").trim();
+        }
+
+        function findBestMatch(input) {
+            let words = input.split(" ");
+            for (let key in chatbotResponses) {
+                if (words.some(word => key.includes(word))) {
+                    return chatbotResponses[key];
+                }
+            }
+            return "I'm not sure I understand. Can you rephrase that?";
+        }
+
+        function chatbot(input) {
+            let cleanedInput = cleanInput(input);
+            return findBestMatch(cleanedInput);
+        }
+
+        // Example Usage:
+        console.log(chatbot("Hello"));   // "Hi! How can I assist you today?"
+        console.log(chatbot("Hw r u"));   // "I'm just a bot, but I'm here to help!"
+        console.log(chatbot("wht is the weather today")); // Matches "weather" keyword
+        console.log(chatbot("wats ur name?"));  // Matches "your name" keyword
+        console.log(chatbot("Bye!!"));   // "Goodbye! Have a great day!"
+
     </script>
 </body>
 
